@@ -7,25 +7,32 @@ public class NodeBaseClass : Editor
 {
     public int id;
     public Rect rect;
-    public string title;
     public delegate void voidFunction(int id);
     public voidFunction closeFunction;
+    public Stitch stitch;
 
     public List<NodeBaseClass> linkedNodes = new List<NodeBaseClass>();
 
     public string myString = "";
 
-    public NodeBaseClass(Rect r, int ID)
+    public NodeBaseClass(Rect r, int ID, Stitch pStitch)
     {
         id = ID;
         rect = r;
+        stitch = pStitch;
     }
     public void BaseDraw()
     {
+        GUILayout.Label(stitch.summary);
+
         if (GUILayout.Button("Edit"))
         {
-            EditWindow eW = EditorWindow.GetWindow<EditWindow>();
-            eW.setNode(this);
+            SpoolWindow[] windows = (SpoolWindow[]) Resources.FindObjectsOfTypeAll(typeof(SpoolWindow));
+            if(windows.Length != 0)
+            {
+                windows[0].PopulateInspector(stitch);
+            }
+
         }
 
         Color temp = GUI.backgroundColor;
