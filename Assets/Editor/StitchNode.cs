@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class StitchNode : NodeBaseClass {
 
     //public Stitch myStitch;
@@ -16,4 +17,13 @@ public class StitchNode : NodeBaseClass {
         BaseDraw();
     }
 
+    public Performer[] getPerformers()
+    {
+        return stitch.performers;
+    }
+
+    public void setPerformers(Performer[] performers)
+    {
+        stitch.performers = performers;
+    }
 }

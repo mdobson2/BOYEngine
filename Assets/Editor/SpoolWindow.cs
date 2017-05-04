@@ -12,7 +12,8 @@ public class SpoolWindow : EditorWindow {
     public Spool previousSpool;
     public Spool workingSpool;
 
-    public Stitch workingStitch;
+    public Stitch stitch;
+    public SerializedObject workingStitch;
 
     [MenuItem("Window/Spool Editor")]
 	public static void GetWindow()
@@ -84,17 +85,31 @@ public class SpoolWindow : EditorWindow {
         EndWindows();
 
         //draw the inspector for the stitch that the designer is working on
-        if(workingStitch != null)
+        if(stitch != null)
         {
+            workingStitch.Update();
+
             rectManager = new Rect(position.width - 300, 10, 300, position.height);
             GUILayout.BeginArea(rectManager);
             {
-                EditorGUILayout.LabelField("Stitch ID: " + workingStitch.stitchID);
-                workingStitch.stitchName = EditorGUILayout.TextField(workingStitch.stitchName);
-                workingStitch.summary = EditorGUILayout.TextArea(workingStitch.summary);
+                SerializedProperty stitchID = workingStitch.FindProperty("stitchID");
+                EditorGUILayout.PropertyField(stitchID);
+                //EditorGUILayout.LabelField("Stitch ID: " + stitch.stitchID);
+                SerializedProperty stitchName = workingStitch.FindProperty("stitchName");
+                EditorGUILayout.PropertyField(stitchName);
+                //stitch.stitchName = EditorGUILayout.TextField(stitch.stitchName);
+                SerializedProperty summary = workingStitch.FindProperty("summary");
+                EditorGUILayout.PropertyField(summary);
+                stitch.summary = EditorGUILayout.TextArea(stitch.summary);
+                stitch.background = (Sprite) EditorGUILayout.ObjectField(stitch.background, typeof(Sprite), false);
+
+                SerializedProperty performers = workingStitch.FindProperty("performers");
+                EditorGUILayout.PropertyField(performers, true);
 
             }
             GUILayout.EndArea();
+
+            workingStitch.ApplyModifiedProperties();
         }
     }
 
@@ -124,6 +139,7 @@ public class SpoolWindow : EditorWindow {
     public void PopulateInspector(Stitch pWorkingStitch)
     {
         Debug.Log("Receiving stitch information");
-        workingStitch = pWorkingStitch;
+        stitch = pWorkingStitch;
+        workingStitch = new SerializedObject(stitch);
     }
 }
