@@ -92,6 +92,8 @@ public class SpoolWindow : EditorWindow {
             rectManager = new Rect(position.width - 300, 10, 300, position.height);
             GUILayout.BeginArea(rectManager);
             {
+                EditorGUILayout.BeginScrollView(new Vector2(position.width - 10, 0));
+                EditorGUILayout.BeginVertical("box");
                 SerializedProperty stitchID = workingStitch.FindProperty("stitchID");
                 EditorGUILayout.PropertyField(stitchID);
                 //EditorGUILayout.LabelField("Stitch ID: " + stitch.stitchID);
@@ -100,12 +102,28 @@ public class SpoolWindow : EditorWindow {
                 //stitch.stitchName = EditorGUILayout.TextField(stitch.stitchName);
                 SerializedProperty summary = workingStitch.FindProperty("summary");
                 EditorGUILayout.PropertyField(summary);
-                stitch.summary = EditorGUILayout.TextArea(stitch.summary);
-                stitch.background = (Sprite) EditorGUILayout.ObjectField(stitch.background, typeof(Sprite), false);
+                //stitch.summary = EditorGUILayout.TextArea(stitch.summary);
 
+                SerializedProperty background = workingStitch.FindProperty("background");
+                EditorGUILayout.PropertyField(background);
+                //stitch.background = (Sprite) EditorGUILayout.ObjectField(stitch.background, typeof(Sprite), false);
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.BeginVertical("box");
                 SerializedProperty performers = workingStitch.FindProperty("performers");
                 EditorGUILayout.PropertyField(performers, true);
+                EditorGUILayout.EndVertical();
 
+                EditorGUILayout.BeginVertical("box");
+                SerializedProperty dialogs = workingStitch.FindProperty("dialogs");
+                EditorGUILayout.PropertyField(dialogs, true);
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.BeginVertical("box");
+                SerializedProperty yarns = workingStitch.FindProperty("yarns");
+                EditorGUILayout.PropertyField(yarns, true);
+                EditorGUILayout.EndVertical();
+                EditorGUILayout.EndScrollView();
             }
             GUILayout.EndArea();
 
