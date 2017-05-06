@@ -21,6 +21,9 @@ public class SpoolWindow : EditorWindow {
     float standardSpace = 10f;
     float inspectorWidth = 300f;
 
+    //nodeConnections
+    public int nodeAttachID = -1;
+
     [MenuItem("Window/Spool Editor")]
 	public static void GetWindow()
     {
@@ -53,7 +56,7 @@ public class SpoolWindow : EditorWindow {
         if(GUI.Button(rectManager,"Add Stitch"))
         {
             Stitch temp = new Stitch();
-            int ID = myStitches.Count + 1;
+            int ID = myStitches.Count;
             temp.stitchID = ID;
             temp.stitchName = "Stitch" + ID;
             temp.yarns = new Yarn[1];
@@ -65,7 +68,8 @@ public class SpoolWindow : EditorWindow {
                 tempList.Add(node.stitch);
             }
             workingSpool.stitchCollection = tempList.ToArray();
-            //PopulateList();
+            myStitches[myStitches.Count - 1].closeFunction += RemoveNode;
+            myStitches[myStitches.Count - 1].nodeEditor = this;
         }
 
         rectManager.width = 250;
@@ -108,8 +112,11 @@ public class SpoolWindow : EditorWindow {
                             locColor = Color.green;
                             break;
                     }
-                    //TODO add in the draw curves here
-
+                    //Debug.Log(myStitches[i].stitch.name.ToString() + " is linked to " + myStitches[i].stitch.yarns[j].choiceStitch.name);
+                    if (myStitches[i].stitch.yarns[j].choiceStitch != null)
+                    {
+                        DrawNodeCurve(myStitches[i].rect, myStitches[myStitches[i].stitch.yarns[j].choiceStitch.stitchID].rect, locColor);
+                    }
                 }
             }
         }
@@ -132,11 +139,17 @@ public class SpoolWindow : EditorWindow {
     {
         myStitches.Clear();
         workingStitch = null;
-        for(int i = 0; i < workingSpool.stitchCollection.Length; i++)
+        if(workingSpool != null)
         {
-            myStitches.Add(new StitchNode(new Rect(30,30,150,150),i, workingSpool.stitchCollection[i]));
+            if(workingSpool.stitchCollection.Length > 0)
+            {
+                for(int i = 0; i < workingSpool.stitchCollection.Length; i++)
+                {
+                    myStitches.Add(new StitchNode(new Rect(30,30,150,150),i, workingSpool.stitchCollection[i]));
+                }
+                previousSpool = workingSpool;
+            }
         }
-        previousSpool = workingSpool;
     }
 
     public void PopulateInspector(StitchNode pWorkingStitch)
@@ -146,5 +159,37 @@ public class SpoolWindow : EditorWindow {
         workingStitch = pWorkingStitch;
         editor = (StitchEditor)Editor.CreateEditor(workingStitch);
         editor.PopulateInspector(workingStitch);
+    }
+
+    public void RemoveNode(int id)
+    {
+        for (int i = 0; i < myStitches.Count; i++)
+        {
+            myStitches[i].linkedNodes.RemoveAll(item => item.id == id);
+        }
+        myStitches.RemoveAt(id);
+        UpdateNodeIDs();
+    }
+
+    public void UpdateNodeIDs()
+    {
+        for(int i = 0; i < myStitches.Count; i++)
+        {
+            myStitches[i].ReassignID(i);
+        }
+    }
+
+    public void BeginAttachment(int winID)
+    {
+        nodeAttachID = winID;
+    }
+
+    public void EndAttachment(int winID)
+    {
+        if(nodeAttachID > -1)
+        {
+            myStitches[nodeAttachID].AttachComplete(myStitches[winID]);
+        }
+        nodeAttachID = -1;
     }
 }

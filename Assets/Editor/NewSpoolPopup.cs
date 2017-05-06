@@ -59,8 +59,14 @@ public class NewSpoolPopup : EditorWindow {
         {
             Spool temp = new Spool();
             temp.name = spoolName;
+            temp.stitchCollection = new Stitch[0];
             AssetDatabase.CreateFolder("Assets", spoolName);
             AssetDatabase.CreateAsset(temp, "Assets/" + spoolName + "/" + spoolName + ".asset");
+            SpoolWindow[] windows = (SpoolWindow[])Resources.FindObjectsOfTypeAll(typeof(SpoolWindow));
+            if (windows.Length != 0)
+            {
+                windows[0].workingSpool = (Spool)AssetDatabase.LoadAssetAtPath("Assets/" + spoolName + "/" + spoolName + ".asset",typeof(Spool));
+            }
             this.Close();
         }
     }

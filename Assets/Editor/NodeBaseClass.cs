@@ -12,6 +12,7 @@ public class NodeBaseClass : Editor
     public Stitch stitch;
 
     public List<NodeBaseClass> linkedNodes = new List<NodeBaseClass>();
+    public SpoolWindow nodeEditor;
 
     public string myString = "";
 
@@ -23,16 +24,20 @@ public class NodeBaseClass : Editor
     }
     public void BaseDraw()
     {
+        if(nodeEditor == null)
+        {
+            CatchReferences();
+        }
         GUILayout.Label(stitch.summary);
 
         if (GUILayout.Button("Edit"))
         {
-            SpoolWindow[] windows = (SpoolWindow[]) Resources.FindObjectsOfTypeAll(typeof(SpoolWindow));
-            if(windows.Length != 0)
-            {
-                windows[0].PopulateInspector(new StitchNode(rect,id,stitch));
-            }
-
+            //SpoolWindow[] windows = (SpoolWindow[]) Resources.FindObjectsOfTypeAll(typeof(SpoolWindow));
+            //if(windows.Length != 0)
+            //{
+            //    windows[0].PopulateInspector(new StitchNode(rect,id,stitch));
+            //}
+            nodeEditor.PopulateInspector(new StitchNode(rect, id, stitch));
         }
 
         Color temp = GUI.backgroundColor;
@@ -59,5 +64,15 @@ public class NodeBaseClass : Editor
     public virtual void AttachComplete(NodeBaseClass winID)
     {
         linkedNodes.Add(winID);
+    }
+
+    public void CatchReferences()
+    {
+        SpoolWindow[] windows = (SpoolWindow[])Resources.FindObjectsOfTypeAll(typeof(SpoolWindow));
+        if (windows.Length != 0)
+        {
+            nodeEditor = windows[0];
+        }
+        closeFunction = nodeEditor.RemoveNode;
     }
 }
