@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOYEngine", "BOYEngine.csproj", "{966538CF-5490-9442-531F-E65DD32129B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOYEngine.Editor", "BOYEngine.Editor.csproj", "{14EBD0E8-E987-3907-3E36-15AD400E5EC0}"

@@ -8,6 +8,7 @@ public class SpoolWindow : EditorWindow {
 
     public Texture2D bckg;
     public List<StitchNode> myStitches = new List<StitchNode>();
+    public Vector2 scrollPosition;
 
     public Spool previousSpool;
     public Spool workingSpool;
@@ -92,37 +93,49 @@ public class SpoolWindow : EditorWindow {
             rectManager = new Rect(position.width - 300, 10, 300, position.height);
             GUILayout.BeginArea(rectManager);
             {
-                EditorGUILayout.BeginScrollView(new Vector2(position.width - 10, 0));
-                EditorGUILayout.BeginVertical("box");
-                SerializedProperty stitchID = workingStitch.FindProperty("stitchID");
-                EditorGUILayout.PropertyField(stitchID);
-                //EditorGUILayout.LabelField("Stitch ID: " + stitch.stitchID);
-                SerializedProperty stitchName = workingStitch.FindProperty("stitchName");
-                EditorGUILayout.PropertyField(stitchName);
-                //stitch.stitchName = EditorGUILayout.TextField(stitch.stitchName);
-                SerializedProperty summary = workingStitch.FindProperty("summary");
-                EditorGUILayout.PropertyField(summary);
-                //stitch.summary = EditorGUILayout.TextArea(stitch.summary);
+                scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+                {
+                    EditorGUILayout.BeginVertical("box");
+                    {
+                        SerializedProperty stitchID = workingStitch.FindProperty("stitchID");
+                        EditorGUILayout.PropertyField(stitchID);
 
-                SerializedProperty background = workingStitch.FindProperty("background");
-                EditorGUILayout.PropertyField(background);
-                //stitch.background = (Sprite) EditorGUILayout.ObjectField(stitch.background, typeof(Sprite), false);
-                EditorGUILayout.EndVertical();
+                        SerializedProperty stitchName = workingStitch.FindProperty("stitchName");
+                        EditorGUILayout.PropertyField(stitchName);
 
-                EditorGUILayout.BeginVertical("box");
-                SerializedProperty performers = workingStitch.FindProperty("performers");
-                EditorGUILayout.PropertyField(performers, true);
-                EditorGUILayout.EndVertical();
+                        SerializedProperty summary = workingStitch.FindProperty("summary");
+                        EditorGUILayout.PropertyField(summary);
 
-                EditorGUILayout.BeginVertical("box");
-                SerializedProperty dialogs = workingStitch.FindProperty("dialogs");
-                EditorGUILayout.PropertyField(dialogs, true);
-                EditorGUILayout.EndVertical();
+                        SerializedProperty status = workingStitch.FindProperty("status");
+                        EditorGUILayout.PropertyField(status);
 
-                EditorGUILayout.BeginVertical("box");
-                SerializedProperty yarns = workingStitch.FindProperty("yarns");
-                EditorGUILayout.PropertyField(yarns, true);
-                EditorGUILayout.EndVertical();
+                        SerializedProperty background = workingStitch.FindProperty("background");
+                        EditorGUILayout.PropertyField(background);
+
+                    }
+                    EditorGUILayout.EndVertical();
+
+                    EditorGUILayout.BeginVertical("box");
+                    {
+                        SerializedProperty performers = workingStitch.FindProperty("performers");
+                        EditorGUILayout.PropertyField(performers, true);
+                    }
+                    EditorGUILayout.EndVertical();
+
+                    EditorGUILayout.BeginVertical("box");
+                    {
+                        SerializedProperty dialogs = workingStitch.FindProperty("dialogs");
+                        EditorGUILayout.PropertyField(dialogs, true);
+                    }
+                    EditorGUILayout.EndVertical();
+
+                    EditorGUILayout.BeginVertical("box");
+                    {
+                        SerializedProperty yarns = workingStitch.FindProperty("yarns");
+                        EditorGUILayout.PropertyField(yarns, true);
+                    }
+                    EditorGUILayout.EndVertical();
+                }
                 EditorGUILayout.EndScrollView();
             }
             GUILayout.EndArea();
@@ -147,6 +160,7 @@ public class SpoolWindow : EditorWindow {
     void PopulateList()
     {
         myStitches.Clear();
+        workingStitch = null;
         for(int i = 0; i < workingSpool.stitchCollection.Length; i++)
         {
             myStitches.Add(new StitchNode(new Rect(30,30,150,150),i, workingSpool.stitchCollection[i]));
