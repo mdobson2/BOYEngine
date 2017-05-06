@@ -13,8 +13,13 @@ public class SpoolWindow : EditorWindow {
     public Spool previousSpool;
     public Spool workingSpool;
 
-    public Stitch stitch;
-    public SerializedObject workingStitch;
+    //public Stitch stitch;
+    public StitchNode workingStitch;
+    public StitchEditor editor;
+
+    //rectManagment
+    float standardSpace = 10f;
+    float inspectorWidth = 300f;
 
     [MenuItem("Window/Spool Editor")]
 	public static void GetWindow()
@@ -27,6 +32,7 @@ public class SpoolWindow : EditorWindow {
     void OnEnable()
     {
         bckg = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Editor/Graphics/grid.jpg", typeof(Texture2D));
+        editor = new StitchEditor();
     }
 
     void OnGUI()
@@ -38,43 +44,39 @@ public class SpoolWindow : EditorWindow {
         }
 
         //Draw the background
-        GUI.DrawTexture(new Rect(0, 0, this.position.width - 300, this.position.height), bckg);
+        GUI.DrawTexture(new Rect(0, 0, this.position.width - inspectorWidth, this.position.height), bckg);
 
         Rect rectManager = new Rect();
-        //for each stitch on the screen
-        for (int i = 0; i < myStitches.Count; i++)
-        {
-            //for each yarn on that stitch
-            for(int j = 0; j < myStitches[i].stitch.yarns.Length; j++)
-            {
-                //change the color of the yarn based on the current node
-                Color locColor = Color.black;
-                switch(myStitches[i].stitch.status)
-                {
-                    case Stitch.stitchStatus.regular:
-                        locColor = Color.black;
-                        break;
-                    case Stitch.stitchStatus.auto:
-                        locColor = Color.green;
-                        break;
-                }
-                //TODO add in the draw curves here
-
-            }
-        }
 
         rectManager = new Rect(10, 10, 100, 20);
         //used to add a new stitch to the window
         if(GUI.Button(rectManager,"Add Stitch"))
         {
-            
+            Stitch temp = new Stitch();
+            int ID = myStitches.Count + 1;
+            temp.stitchID = ID;
+            temp.stitchName = "Stitch" + ID;
+            temp.yarns = new Yarn[1];
+            AssetDatabase.CreateAsset(temp, "Assets/" + workingSpool.name +"/" + temp.stitchName + ".asset");
+            myStitches.Add(new StitchNode(new Rect(10, 40, 150, 150), myStitches.Count, temp));
+            List<Stitch> tempList = new List<Stitch>();
+            foreach(StitchNode node in myStitches)
+            {
+                tempList.Add(node.stitch);
+            }
+            workingSpool.stitchCollection = tempList.ToArray();
+            //PopulateList();
         }
 
-        rectManager.x += 110;
         rectManager.width = 250;
-        //TODO add in the ability to choose a spool here
+        rectManager.x = position.width - inspectorWidth - standardSpace - rectManager.width;
         workingSpool = (Spool)EditorGUI.ObjectField(rectManager, workingSpool, typeof(Spool), false);
-
+        rectManager.width = 100;
+        rectManager.x -= standardSpace + rectManager.width;
+        if(GUI.Button(rectManager, "New Spool"))
+        {
+            NewSpoolPopup.Init();
+        }
         
 
         BeginWindows();
@@ -82,65 +84,34 @@ public class SpoolWindow : EditorWindow {
         {
             myStitches[i].rect = GUI.Window(i,myStitches[i].rect, myStitches[i].DrawGUI, myStitches[i].stitch.stitchName);
         }
-
+        GUI.Window(1000, new Rect(position.width - inspectorWidth, 0, inspectorWidth, position.height), editor.DrawGUI, "Inspector");
+        GUI.BringWindowToFront(1000);
         EndWindows();
 
-        //draw the inspector for the stitch that the designer is working on
-        if(stitch != null)
+        //for each stitch on the screen
+        for (int i = 0; i < myStitches.Count; i++)
         {
-            workingStitch.Update();
-
-            rectManager = new Rect(position.width - 300, 10, 300, position.height);
-            GUILayout.BeginArea(rectManager);
+            //Debug.Log(myStitches[i].stitch.name + " has " + myStitches[i].stitch.yarns.Length + " yarns");
+            //for each yarn on that stitch
+            if(myStitches[i].stitch.yarns.Length > 0)
             {
-                scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+                for(int j = 0; j < myStitches[i].stitch.yarns.Length; j++)
                 {
-                    EditorGUILayout.BeginVertical("box");
+                    //change the color of the yarn based on the current node
+                    Color locColor = Color.black;
+                    switch(myStitches[i].stitch.status)
                     {
-                        SerializedProperty stitchID = workingStitch.FindProperty("stitchID");
-                        EditorGUILayout.PropertyField(stitchID);
-
-                        SerializedProperty stitchName = workingStitch.FindProperty("stitchName");
-                        EditorGUILayout.PropertyField(stitchName);
-
-                        SerializedProperty summary = workingStitch.FindProperty("summary");
-                        EditorGUILayout.PropertyField(summary);
-
-                        SerializedProperty status = workingStitch.FindProperty("status");
-                        EditorGUILayout.PropertyField(status);
-
-                        SerializedProperty background = workingStitch.FindProperty("background");
-                        EditorGUILayout.PropertyField(background);
-
+                        case Stitch.stitchStatus.regular:
+                            locColor = Color.black;
+                            break;
+                        case Stitch.stitchStatus.auto:
+                            locColor = Color.green;
+                            break;
                     }
-                    EditorGUILayout.EndVertical();
+                    //TODO add in the draw curves here
 
-                    EditorGUILayout.BeginVertical("box");
-                    {
-                        SerializedProperty performers = workingStitch.FindProperty("performers");
-                        EditorGUILayout.PropertyField(performers, true);
-                    }
-                    EditorGUILayout.EndVertical();
-
-                    EditorGUILayout.BeginVertical("box");
-                    {
-                        SerializedProperty dialogs = workingStitch.FindProperty("dialogs");
-                        EditorGUILayout.PropertyField(dialogs, true);
-                    }
-                    EditorGUILayout.EndVertical();
-
-                    EditorGUILayout.BeginVertical("box");
-                    {
-                        SerializedProperty yarns = workingStitch.FindProperty("yarns");
-                        EditorGUILayout.PropertyField(yarns, true);
-                    }
-                    EditorGUILayout.EndVertical();
                 }
-                EditorGUILayout.EndScrollView();
             }
-            GUILayout.EndArea();
-
-            workingStitch.ApplyModifiedProperties();
         }
     }
 
@@ -168,10 +139,12 @@ public class SpoolWindow : EditorWindow {
         previousSpool = workingSpool;
     }
 
-    public void PopulateInspector(Stitch pWorkingStitch)
+    public void PopulateInspector(StitchNode pWorkingStitch)
     {
-        Debug.Log("Receiving stitch information");
-        stitch = pWorkingStitch;
-        workingStitch = new SerializedObject(stitch);
+        //Debug.Log("Receiving stitch information");
+        //stitch = pWorkingStitch;
+        workingStitch = pWorkingStitch;
+        editor = (StitchEditor)Editor.CreateEditor(workingStitch);
+        editor.PopulateInspector(workingStitch);
     }
 }

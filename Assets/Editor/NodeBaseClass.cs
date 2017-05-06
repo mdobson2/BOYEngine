@@ -30,7 +30,7 @@ public class NodeBaseClass : Editor
             SpoolWindow[] windows = (SpoolWindow[]) Resources.FindObjectsOfTypeAll(typeof(SpoolWindow));
             if(windows.Length != 0)
             {
-                windows[0].PopulateInspector(stitch);
+                windows[0].PopulateInspector(new StitchNode(rect,id,stitch));
             }
 
         }
