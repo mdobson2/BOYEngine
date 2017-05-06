@@ -76,6 +76,7 @@
     <Compile Include="Assets\Editor\NewSpoolPopup.cs" />
     <Compile Include="Assets\Editor\NodeBaseClass.cs" />
     <Compile Include="Assets\Editor\SpoolWindow.cs" />
+    <Compile Include="Assets\Editor\SpoolWindowOptions.cs" />
     <Compile Include="Assets\Editor\StitchEditor.cs" />
     <Compile Include="Assets\Editor\StitchNode.cs" />
   </ItemGroup>

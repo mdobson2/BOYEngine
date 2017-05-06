@@ -16,6 +16,9 @@ public class NodeBaseClass : Editor
 
     public string myString = "";
 
+    public float standardSpacing = 20;
+    public float choiceSpacing = 26;
+
     public NodeBaseClass(Rect r, int ID, Stitch pStitch)
     {
         id = ID;
@@ -28,8 +31,24 @@ public class NodeBaseClass : Editor
         {
             CatchReferences();
         }
-        GUILayout.Label(stitch.summary);
+        if(closeFunction == null)
+        {
+            CatchReferences();
+        }
 
+        rect.height = GetFullHeight();
+
+        GUILayout.BeginVertical("box");
+        {
+            GUILayout.Label(stitch.summary);
+        }
+        GUILayout.EndVertical();
+        GUILayout.BeginVertical("box");
+        {
+            GUILayout.Label("# of Dialogs: " + stitch.dialogs.Length);
+            GUILayout.Label("# of Performers: " + stitch.performers.Length);
+        }
+        GUILayout.EndVertical();
         if (GUILayout.Button("Edit"))
         {
             //SpoolWindow[] windows = (SpoolWindow[]) Resources.FindObjectsOfTypeAll(typeof(SpoolWindow));
@@ -39,7 +58,14 @@ public class NodeBaseClass : Editor
             //}
             nodeEditor.PopulateInspector(new StitchNode(rect, id, stitch));
         }
-
+        for(int i = 0; i < stitch.yarns.Length; i++)
+        {
+            GUILayout.BeginVertical("box");
+            {
+                GUILayout.Label(stitch.yarns[i].choiceString);
+            }
+            GUILayout.EndVertical();
+        }
         Color temp = GUI.backgroundColor;
         GUI.backgroundColor = Color.red;
 
@@ -74,5 +100,20 @@ public class NodeBaseClass : Editor
             nodeEditor = windows[0];
         }
         closeFunction = nodeEditor.RemoveNode;
+    }
+
+    public void RemoveAsset(string storyName)
+    {
+        AssetDatabase.DeleteAsset("Assets/" + storyName + "/" + stitch.name + ".asset");
+    }
+
+    public float GetStandardHeight()
+    {
+        return standardSpacing * 5.5f;
+    }
+
+    public float GetFullHeight()
+    {
+        return GetStandardHeight() + stitch.yarns.Length * choiceSpacing;
     }
 }
