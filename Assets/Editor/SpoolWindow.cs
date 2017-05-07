@@ -26,7 +26,7 @@ public class SpoolWindow : EditorWindow {
     //nodeConnections
     public int nodeAttachID = -1;
 
-    [MenuItem("Window/Spool Editor")]
+    [MenuItem("Custom Windows/Spool Editor %e")]
 	public static void GetWindow()
     {
         EditorWindow window = EditorWindow.GetWindow<SpoolWindow>();
@@ -60,7 +60,7 @@ public class SpoolWindow : EditorWindow {
             }
             else
             {
-                Debug.Log(workingSpool.name + " - null");
+                //Debug.Log(workingSpool.name + " - null");
             }
             //SaveLayout(previousSpool);
             PopulateList();
@@ -154,7 +154,10 @@ public class SpoolWindow : EditorWindow {
 
     private void OnDestroy()
     {
-        SaveLayout(workingSpool);
+        if(workingSpool != null)
+        {
+            SaveLayout(workingSpool);
+        }
     }
 
     //used to draw the curve from one stitch to the next
@@ -198,7 +201,7 @@ public class SpoolWindow : EditorWindow {
                 Rect tempRect = new Rect();
                 for(int i = 0; i < workingSpool.stitchCollection.Length; i++)
                 {           
-                    if(tempOpt.storedRects.Length > 0)
+                    if(tempOpt.storedRects.Length > 0 && tempOpt.storedRects[i] != new Rect())
                     {
                         tempRect = tempOpt.storedRects[i];
                     }
